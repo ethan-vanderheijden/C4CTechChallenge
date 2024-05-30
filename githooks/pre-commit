@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+
+files="$(git diff --name-only --cached --diff-filter=ACMTUXBR)"
+
+black --line-length 100 .
+npx prettier "frontend/*.{js,jsx}" --tab-width 4 --single-quote --print-width 100 --html-whitespace-sensitivity strict --write
+git add $files
