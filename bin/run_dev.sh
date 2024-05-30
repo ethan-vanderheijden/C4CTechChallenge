@@ -2,7 +2,7 @@
 
 export QUART_DEBUG=true
 
-cd ..
+cd "$(dirname $(readlink -f $0))/.."
 
 (cd frontend && npm run watch) &
 python3 -m partners_list &
