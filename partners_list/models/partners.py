@@ -13,3 +13,12 @@ async def get_all_partners():
 async def delete_partner(id):
     async with get_db_cursor() as cursor:
         await cursor.execute("DELETE FROM Partners where id=?", (id,))
+
+
+async def add_partner(name, logo, description, active):
+    async with get_db_cursor() as cursor:
+        await cursor.execute(
+            "INSERT INTO Partners (name, logo, description, active) VALUES (?, ?, ?, ?)",
+            (name, logo, description, active),
+        )
+        return cursor.lastrowid
