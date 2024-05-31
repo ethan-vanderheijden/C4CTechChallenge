@@ -22,3 +22,11 @@ async def add_partner(name, logo, description, active):
             (name, logo, description, active),
         )
         return cursor.lastrowid
+
+
+async def update_partner(id, name, logo, description, active):
+    async with get_db_cursor() as cursor:
+        await cursor.execute(
+            "UPDATE Partners SET name=?, logo=?, description=?, active=? where id=?",
+            (name, logo, description, active, id),
+        )

@@ -17,7 +17,7 @@ class PartnerData {
     }
 }
 
-function PartnerDisplay({ partnerData, onDelete }) {
+function PartnerDisplay({ partnerData, onEdit, onDelete }) {
     let img = null;
     if (partnerData.logo) {
         img = <img src={partnerData.logo} alt={`${partnerData.name}'s logo`}></img>;
@@ -30,6 +30,9 @@ function PartnerDisplay({ partnerData, onDelete }) {
                 ) : (
                     <span className="inactive">Inactive</span>
                 )}
+                <button className="btn-green" onClick={onEdit}>
+                    Edit
+                </button>
                 <button className="btn-red" onClick={onDelete}>
                     Delete
                 </button>
@@ -165,7 +168,10 @@ function EditPartnerData({ title, initialPartnerData, onDone }) {
 
 function App() {
     const [partners, setPartners] = React.useState([]);
-    const [creating, setCreating] = React.useState(false);
+    const [editing, setEditing] = React.useState({
+        enabled: false,
+        linkedPartnerId: null,
+    });
 
     useEffect(() => {
         fetch('/api/partners/all').then(async (result) => {
@@ -186,26 +192,52 @@ function App() {
         }
     };
 
-    const addPartner = async (partnerData) => {
-        setCreating(false);
-        if (!partnerData) {
+    const finishEditingPartner = async (finalPartnerData) => {
+        setEditing({
+            enabled: false,
+            linkedPartnerId: null,
+        });
+
+        if (!finalPartnerData) {
             return;
         }
 
-        const response = await fetch('/api/partners/add', {
-            method: 'POST',
+        let api = '/api/partners/add';
+        let method = 'POST';
+        let data = {
+            name: finalPartnerData.name,
+            logo: finalPartnerData.logo,
+            description: finalPartnerData.description,
+            active: finalPartnerData.active,
+        };
+        if (editing.linkedPartnerId) {
+            api = `/api/partners/${editing.linkedPartnerId}`;
+            method = 'PATCH';
+            data.id = editing.linkedPartnerId;
+        }
+
+        const response = await fetch(api, {
+            method: method,
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(partnerData),
+            body: JSON.stringify(data),
         });
         if (response.ok) {
-            const json = await response.json();
-            const id = json.id;
-            partnerData.id = id;
-            setPartners([...partners, partnerData]);
+            if (editing.linkedPartnerId) {
+                finalPartnerData.id = editing.linkedPartnerId;
+                const updatedPartners = partners.map((partner) =>
+                    partner.id === editing.linkedPartnerId ? finalPartnerData : partner,
+                );
+                setPartners(updatedPartners);
+            } else {
+                const json = await response.json();
+                const id = json.id;
+                finalPartnerData.id = id;
+                setPartners([...partners, finalPartnerData]);
+            }
         } else {
-            alert('Something went wrong when adding partner');
+            alert('Something went wrong when updating partner details');
         }
     };
 
@@ -213,28 +245,53 @@ function App() {
         <PartnerDisplay
             key={partner.id}
             partnerData={partner}
+            onEdit={() => {
+                setEditing({
+                    enabled: true,
+                    linkedPartnerId: partner.id,
+                });
+            }}
             onDelete={() => {
                 deletePartner(partner.id);
             }}
         />
     ));
 
+    let editingDisplay = null;
+    if (editing.enabled && editing.linkedPartnerId) {
+        const parter = partners.find((partner) => partner.id === editing.linkedPartnerId);
+        editingDisplay = (
+            <EditPartnerData
+                title={'Editing - ' + parter.name}
+                initialPartnerData={parter}
+                onDone={finishEditingPartner}
+            />
+        );
+    } else {
+        editingDisplay = (
+            <EditPartnerData
+                title={'Add a New Partner'}
+                initialPartnerData={null}
+                onDone={finishEditingPartner}
+            />
+        );
+    }
+
     return (
         <>
             <h1 id="main-header">C4C: Partner Organizations</h1>
-            {creating ? (
-                <EditPartnerData
-                    title={'Add a New Partner'}
-                    initialPartnerData={null}
-                    onDone={addPartner}
-                />
+            {editing.enabled ? (
+                editingDisplay
             ) : (
                 <>
                     <div id="add-partner-container">
                         <button
                             className="btn-gray"
                             onClick={() => {
-                                setCreating(true);
+                                setEditing({
+                                    enabled: true,
+                                    linkedPartnerId: null,
+                                });
                             }}
                         >
                             Add partner

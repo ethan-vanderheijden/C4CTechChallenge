@@ -60,6 +60,16 @@ button {
     background-color: var(--red);
 }
 
+.btn-green {
+    color: var(--green);
+    border: 1px solid var(--green);
+}
+
+.btn-green:hover {
+    color: white;
+    background-color: var(--green);
+}
+
 .btn-gray {
     color: var(--gray);
     border: 1px solid var(--gray);
@@ -96,13 +106,14 @@ button {
 .top-bar {
     margin-bottom: 1.5rem;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 1rem;
 }
 
 .top-bar span {
     font-weight: 500;
     font-size: 1.15rem;
+    margin-right: auto;
 }
 
 .top-bar button {
