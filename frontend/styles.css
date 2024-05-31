@@ -1,11 +1,8 @@
 body {
-    background: linear-gradient(#0d6efd24, #0d6efd05);
-    background-attachment: fixed;
     --red: #dc3545;
     --green: #198754;
     --gray: #6c757d;
 }
-
 
 input, textarea {
     padding: 6px 12px;
@@ -50,6 +47,10 @@ button {
     transition: color .15s ease-in-out,background-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
+button:not(#emergency-btn):hover::after {
+    content: ' \1F415';
+}
+
 .btn-red {
     color: var(--red);
     border: 1px solid var(--red);
@@ -78,6 +79,23 @@ button {
 .btn-gray:hover {
     color: white;
     background-color: var(--gray);
+}
+
+#emergency-btn {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: -1000;
+    opacity: 0;
+    background-image: url(https://i.pinimg.com/736x/73/84/58/73845833abd6bdae7ff81ca643235878.jpg);
+    width: 89px;
+    height: 121px;
+    background-size: 89px 121px;
+}
+
+#emergency-btn:is(:focus, :active) {
+    z-index: 10;
+    opacity: 1;
 }
 
 #main-header {
@@ -169,6 +187,19 @@ button {
 
 .partner-details-form table input[type=checkbox] {
     vertical-align: middle;
+}
+
+#background {
+    background-image: url(https://i.pinimg.com/736x/e8/87/fb/e887fbdce4f20887507d04e1b4a8393d.jpg);
+    position: fixed;
+    top: -50px;
+    left: -50px;
+    width: 10000px;
+    height: 10000px;
+    z-index: -100;
+    filter: blur(15px);
+    background-size: 50px 50px;
+    opacity: 0.3;
 }
 
 .box-shadow {

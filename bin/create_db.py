@@ -2,18 +2,22 @@
 
 import asyncio
 import aiosqlite
+import os
+
+# one level up from bin directory
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 async def create_db():
-    db = await aiosqlite.connect("../database/partners_list.db")
+    db = await aiosqlite.connect("database/partners_list.db")
     cursor = await db.cursor()
 
-    with open("../database/schema.sql") as f:
+    with open("database/schema.sql") as f:
         await cursor.executescript(f.read())
 
     insert_dummy = input("Would you like to insert dummy data? (y/n): ") == "y"
     if insert_dummy:
-        with open("../database/dummy_data.sql") as f:
+        with open("database/dummy_data.sql") as f:
             await cursor.executescript(f.read())
 
     await cursor.close()

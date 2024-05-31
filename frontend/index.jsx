@@ -308,5 +308,14 @@ const rootDOM = document.createElement('div');
 rootDOM.id = 'root';
 document.body.appendChild(rootDOM);
 
+const backgroundDOM = document.createElement('div');
+backgroundDOM.id = 'background';
+document.body.appendChild(backgroundDOM);
+
+const emergencyBtnDom = document.createElement('button');
+emergencyBtnDom.classList.add('btn-gray');
+emergencyBtnDom.id = 'emergency-btn';
+document.body.appendChild(emergencyBtnDom);
+
 const root = createRoot(rootDOM);
 root.render(<App />);
